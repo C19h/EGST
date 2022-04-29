@@ -6,6 +6,7 @@ import os, sys
 from chinese_calendar import is_workday
 
 # %%
+
 Files = []
 Files.append('./data/tyc_647.csv')  # 厂房照明
 Files.append('./data/tyc_907.csv')  # 厂房照明
