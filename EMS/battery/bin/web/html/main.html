@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<head lang="zh-CN">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta content="" name="description" />
+	<meta content="" name="author" />
+	<link rel="icon" href="/resource/favicon.ico">
+	<title>RealData</title>
+	<link href="/resource/bootstrap-notify/animate.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" rel="stylesheet">
+	<link href="/resource/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet">
+	
+	<script src="/resource/jquery/jquery-1.11.3.min.js"></script>
+	<script src="/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	<script src="/resource/bootstrap-notify/bootstrap-notify.min.js"></script>
+	<script src="/resource/bootstrap-select/js/bootstrap-select.min.js"></script>
+	<script src="/resource/echarts/echarts.min.js"></script>
+	<script src="/resource/ace-editor-1.4.13/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/resource/ace-editor-1.4.13/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+	<button type="submit" class="btn btn-success" onclick="refreshchart()">计算</button>
+	<div id='param'></div>
+	<div id="main" style="height:500px; padding-top: 10px;"></div>
+</body>
+</html>
+<script type="text/javascript">
+	function init(){
+		data = {
+			"T":24,
+			"UsagePerHour":[100,100,100,120,130,120,110,100,120,140,160,170,110,100,90,80,70,60,50,40,30,20,10,10],
+			"GeneratePerHour":[0,0,0,10,20,30,40,40,30,20,10,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			"BuyPricePerHour":[0.57,0.77,0.77,0.77,0.57,0.57,0.57,0.57,0.77,0.77,0.77,0.77,1.03,1.03,1.03,0.57,0.26,0.26,0.26,0.26,0.26,0.26,0.26,0.26],
+			"SellPricePerHour":[0.27,0.32,0.32,0.32,0.27,0.27,0.27,0.27,0.32,0.32,0.32,0.32,0.32,0.32,0.32,0.27,0.19,0.19,0.19,0.19,0.19,0.19,0.19,0.19],
+			"SellLimitPerHour":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			"BuyLimitPerHour":[800,800,800,200,200,200,200,200,200,120,120,120,800,800,800,800,800,800,800,800,800,800,800,800],
+			"BatteryCostPerPower":0.1,
+			"SOCMax":200,
+			"SOCMin":20,
+			"BatteryUsageMax":60,
+			"BatteryChargeMax":50,
+			"PlanType":0,
+			"BatteryPerHour":[]
+		}
+		sstr = "{"
+		first = 1
+		for (attr in data){
+			if (first == 1){
+				sstr += '\n\t"' + attr + '":' + JSON.stringify(data[attr])
+				first = 0
+			}
+			else
+				sstr += ',\n\t"' + attr + '":' + JSON.stringify(data[attr])
+		}
+		sstr += '\n}'
+		var editor = ace.edit("param", {
+				theme: "ace/theme/tomorrow_night_eighties",
+				mode: "ace/mode/json",
+				maxLines: 50,
+				wrap: true,
+				autoScrollEditorIntoView: true
+			});
+			editor.setFontSize(14)
+			editor.setValue(sstr)
+	}
+	function refreshchart(){
+		var editor = ace.edit("param", {
+				theme: "ace/theme/tomorrow_night_eighties",
+				mode: "ace/mode/json",
+				maxLines: 50,
+				wrap: true,
+				autoScrollEditorIntoView: true
+			});
+		val = editor.getValue()
+		$.ajax({
+			type:"POST",
+			url:"/battery/calcPlanInDay",
+			contentType: "application/json",
+			dataType:"json",
+			data:val,
+			success:function(result){
+				if (result['success'] == 1 && result['data']['Success'] == 1){
+					$.notify({
+						message: '成功' 
+					},{
+						type: 'success',
+						placement: {
+							from: "bottom",
+							align: "right"
+						}
+					});
+				}
+				else{
+					$.notify({
+						message: '失败' 
+					},{
+						type: 'warning',
+						placement: {
+							from: "bottom",
+							align: "right"
+						}
+					});
+				}
+				data = result['data']
+				x = [];
+
+				for(var i=0;i<data['ShortagePerHour'].length;i++){
+					t = i + 7
+					if (t >= 24)
+					{
+						t = t - 24
+					}
+					x.push(t);
+				}
+				var subtitle = '[成功]总成本'
+				if (data['Success'] == 0){
+					subtitle = '[失败]总成本'
+				}
+				// 利用dom，初始化echarts实例
+				var myChart = echarts.init(document.getElementById('main'));
+				var option = {
+					title: {
+						text: subtitle + data['TotalCost']
+					},
+					tooltip: {},
+					legend: {
+						data:['用电量缺口','买电量','电池放电量','电池剩余容量','成本']
+					},
+					dataZoom:[{
+						type:"inside"         //详细配置可见echarts官网
+					}],
+					toolbox:{
+						show:true,
+						feature:{
+							restore: { //重置
+								show: true
+							},
+							dataView : {                            //数据视图工具，可以展现当前图表所用的数据，编辑后可以动态更新
+								show: true,                         //是否显示该工具。
+								title:"数据视图",
+								readOnly: false,                    //是否不可编辑（只读）
+								lang: ['数据视图', '关闭', '刷新'],  //数据视图上有三个话术，默认是['数据视图', '关闭', '刷新']
+							}
+						}
+					},
+					xAxis: {
+						data: x
+					},
+					yAxis: {},
+					series: [{
+						name: '用电量缺口',
+						type: 'line',
+						data: data['ShortagePerHour']
+						},
+						{
+						name: '买电量',
+						type: 'line',
+						data: data['PlanBuyPerHour']
+						},
+						{
+						name: '电池放电量',
+						type: 'line',
+						data: data['BatteryPlanPerHour']
+						},
+						{
+						name: '电池剩余容量',
+						type: 'line',
+						data: data['SOCPerHour']
+						},
+						{
+						name: '成本',
+						type: 'line',
+						data: data['PlanCostPerHour']
+						}
+						
+					]
+				};
+				// 使用刚指定的配置项和数据显示图表。
+				myChart.setOption(option);
+			}});
+
+        // 指定图表的配置项和数据    图标的数据可以从后台构造 然后传回前台
+	}
+	init();
+</script>

@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<head lang="zh-CN">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta content="" name="description" />
+	<meta content="" name="author" />
+	<link rel="icon" href="/resource/favicon.ico">
+	<title>RealData</title>
+	<link href="/resource/bootstrap-notify/animate.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" rel="stylesheet">
+	<link href="/resource/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet">
+	
+	<script src="/resource/jquery/jquery-1.11.3.min.js"></script>
+	<script src="/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	<script src="/resource/bootstrap-notify/bootstrap-notify.min.js"></script>
+	<script src="/resource/bootstrap-select/js/bootstrap-select.min.js"></script>
+</head>
+<body>
+	<table style="width: 100%;">
+		<tr >
+			<td style="width: 15%;">
+				<button type="button" class="btn btn-success" onclick="test0()">初始化DMC</button>
+			</td>
+			<td style="width: 15%;">
+							</td>
+			<td style="width: 15%;">
+					</td>
+			<td style="width: 15%;">
+				</td>
+			<td style="width: 20%;">
+				</td>
+			<td style="width: 20%;">
+				</td>
+		</tr>
+	</table>
+	<div  style="margin-top: 5px; height: 450px;">
+	<pre>
+		<textarea id="info" style="height: 400px;" type="text" placeholder="" class="form-control">
+{
+	"name": "test",
+	"n": 40,
+	"m": 40,
+	"a":[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.03625384938440364, -0.06593599079287214, -0.09023767278119471, -0.1101342071765557, -0.12642411176571153, -0.13976115761755956, -0.1506806072116787, -0.1596206964010689, -0.1669402223556827, -0.17293294335267748, -0.17783936832753322, -0.1818564093421175, -0.18514528435713323, -0.18783798747495642, -0.19004258632642723, -0.19184755920432678, -0.1933253460079348, -0.19453525551054152, -0.19552584562876688],
+	"aflow":[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.09063462346100909, 0.16483997698218034, 0.22559418195298675, 0.2753355179413892, 0.31606027941427883, 0.3494028940438989, 0.3767015180291967, 0.39905174100267227, 0.4173505558892067, 0.43233235838169365, 0.44459842081883305, 0.4546410233552937, 0.46286321089283305, 0.46959496868739103, 0.475106465816068, 0.4796188980108169, 0.48331336501983696, 0.48633813877635373, 0.4888146140719172],
+	"azd":[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.18126924692201818, 0.3296799539643607, 0.4511883639059735, 0.5506710358827784, 0.6321205588285577, 0.6988057880877978, 0.7534030360583934, 0.7981034820053445, 0.8347011117784134, 0.8646647167633873, 0.8891968416376661, 0.9092820467105874, 0.9257264217856661, 0.9391899373747821, 0.950212931632136, 0.9592377960216338, 0.9666267300396739, 0.9726762775527075, 0.9776292281438344],
+	"awd":[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],	
+	"addl":[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],	
+	"aoxy":[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+	"q":[0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9],	
+	"r":[0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8],	
+	"h":0.8,
+	"lu":14,
+	"ly":2,
+	"lflow":20,
+	"lzd":20,
+	"lwd":0,
+	"lddl":0,
+	"loxy":0
+}</textarea>
+	</pre>
+	</div>
+	<button type="button" class="btn btn-success" onclick="test1()">周期运算</button>
+			
+	<div  style="margin-top: 5px;">
+		<pre>
+		<textarea id="info1" style="height: 200px;" type="text" placeholder="" class="form-control">
+{
+	"name": "test",
+	"lu":14,
+	"ly":2,
+	"lflow":20,
+	"lzd":20,
+	"lwd":0,
+	"lddl":0,
+	"loxy":0,
+	"tar":1
+}	
+		</textarea>
+		</pre>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+	function test0(){
+		param = JSON.parse($('#info').val().replace(/[\r\n]/g,""))
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url:"/api/dmc/init",
+			data:JSON.stringify(param),
+			success:function(result){
+				$.notify({
+						message: JSON.stringify(result)
+					},{
+					type: 'success',
+					placement: {
+						from: "bottom",
+						align: "right"
+					}
+				});
+			}
+    	});
+	}
+	function test1(){
+		param = JSON.parse($('#info1').val().replace(/[\r\n]/g,""))
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url:"/api/dmc/nextstep",
+			data:JSON.stringify(param),
+			success:function(result){
+				$.notify({
+						message: JSON.stringify(result)
+					},{
+					type: 'success',
+					placement: {
+						from: "bottom",
+						align: "right"
+					}
+				});
+			}
+    	});
+	}
+
+</script>

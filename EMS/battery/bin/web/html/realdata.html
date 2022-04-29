@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+<head lang="zh-CN">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta content="" name="description" />
+	<meta content="" name="author" />
+	<link rel="icon" href="/resource/favicon.ico">
+	<title>RealData</title>
+	<link href="/resource/bootstrap-notify/animate.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/resource/bootstrap-table/bootstrap-table.min.css" />
+	<link rel="stylesheet" href="/resource/fancytree/skin-win7/ui.fancytree.min.css">
+	<link href="/resource/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css">
+	<script src="/resource/jquery/jquery-1.11.3.min.js"></script>
+	<script src="/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	<script src="/resource/bootstrap-notify/bootstrap-notify.min.js"></script>
+	<script src="/resource/jquery-ui/jquery-ui.min.js"></script>
+	<script src="/resource/fancytree/jquery.fancytree.js"></script>
+	<script type="text/javascript" src="/resource/bootstrap-table/bootstrap-table.min.js" ></script>
+	<script type="text/javascript" src="/resource/bootstrap-table/locale/bootstrap-table-zh-CN.min.js" ></script>
+	<style type="text/css">
+		.pull-right.pagination-detail{
+			display:none;
+			}
+	</style>
+</head>
+<body>
+	<table style="margin-top: 5px;">
+		<tr>
+			<td>
+				<button type="button" class="btn btn-success" onclick="refreshtree()">Refresh Channel</button>
+			</td>
+			<td style="width: 2%;"></td>
+			<td>
+				<input type="radio" name="optionsRadios" id="optionsRadios1" value="0" checked onclick="radio(0)">Yc</input>
+				<input type="radio" name="optionsRadios" id="optionsRadios2" value="1" onclick="radio(1)">Yx</input>
+				<button type="button" class="btn btn-success" onclick="refreshdata()">Refresh Data</button>
+			</td>
+		</tr>
+		<tr style="height: 5px;"></tr>
+		<tr style="height: 100%;">
+			<td style="vertical-align: top">
+				<div id="tree1" class="fancytree-radio" style="height: 100%; margin: 0px;">
+				</div>
+			</td>
+			<td style="width: 2%;"></td>
+			<td style="vertical-align: top">
+				<div id='tableContainer'>
+					<table id="datatable"></table>
+				</div>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
+<script type="text/javascript">
+	var treeseltype = 0;
+	var treeseldatakey = "";
+	var treeseldata1 = 0;
+	var treeseldata2 = 0;
+	var ycyxtype = 0;
+	function refreshdata(){
+		if(treeseltype == 0){
+			refreshchanneldata();
+		}
+		else{
+			refreshmoduledata();
+		}
+	}
+	function radio(ytype){
+		ycyxtype = ytype;
+		refreshdata();
+	}
+	function refreshchanneldata(){
+		var turl = "";
+		if (ycyxtype == 0){
+			turl = "/api/getChannelYcData";
+		}
+		else{
+			turl = "/api/getChannelYxData";
+		}
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url: turl,
+			data:JSON.stringify({
+				"ipport":treeseldatakey,
+				"index":treeseldata1
+			}),
+			success:function(result){
+				$('#datatable').bootstrapTable('removeAll');
+				document.getElementById("tableContainer").innerHTML='<table id="datatable"></table>';
+				var coldata = [];
+				coldata.push({'title':'index', 'field':'index'});
+				for (var i = 0;i<result.length;i++){
+					coldata.push({
+						'title':'module '+(i+1), 
+						'field':'' + i,
+						'cellStyle':function(value,row,index){  
+                        	    if (value.indexOf("q") >= 0){  
+                        	        return {css:{"background-color":"pink"}}; 
+								}
+								else{
+									return {};
+								}
+                        	}
+
+					});
+				};
+				//remap data
+				var rdata = [];
+				var rindex = 0;
+				while(true){
+					var row = {}
+					var finded = 0;
+					for (var i = 0;i<result.length;i++){
+						if (result[i].length > rindex){
+							if (ycyxtype == 0){
+								if (result[i][rindex]['q'] == 0){
+									row['' +i] = result[i][rindex]['Val'].toFixed(3);
+								}
+								else{
+									row['' +i] = "" + result[i][rindex]['Val'].toFixed(3) + " (q=" + result[i][rindex]['q'] + ")";
+								}
+							}
+							else{
+								if (result[i][rindex]['q'] == 0){
+									row['' +i] = result[i][rindex]['Val'];
+								}
+								else{
+									row['' +i] = "" + result[i][rindex]['Val'] + " (q=" + result[i][rindex]['q'] + ")";
+								}
+							}
+							finded = 1;
+						}
+						else{
+							row['' +i] = '';
+						}
+					}
+					if (finded == 0){
+						break;
+					}
+					row['index'] = rindex + 1;
+					rdata.push(row);
+					rindex = rindex + 1;
+				}
+				$('#datatable').bootstrapTable({
+					striped: true,
+					columns: coldata,
+					cache: false,
+					pagination: true,
+					pageList: [10],
+					pageSize: 10,
+					data: rdata
+				});
+			}
+		});
+	}
+	function refreshmoduledata(){
+		var turl = "";
+		if (ycyxtype == 0){
+			turl = "/api/getModuleYcData";
+		}
+		else{
+			turl = "/api/getModuleYxData";
+		}
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url: turl,
+			data:JSON.stringify({
+				"ipport":treeseldatakey,
+				"index":treeseldata1,
+				"moduleindex":treeseldata2
+			}),
+			success:function(result){
+				$('#datatable').bootstrapTable('removeAll');
+				document.getElementById("tableContainer").innerHTML='<table id="datatable"></table>';
+				var coldata = [];
+				var bkred = function(value,row,index){  
+                        	    if (row["q"] > 0.5){  
+                        	        return {css:{"background-color":"pink"}}; 
+								}
+								else{
+									return {};
+								}
+                        	};
+				coldata.push({'title':'index', 'field':'index', 'cellStyle':bkred});
+				coldata.push({'title':'Time', 'field':'Time', 'cellStyle':bkred});
+				coldata.push({'title':'Val', 'field':'Val', 'cellStyle':bkred});
+				coldata.push({'title':'q', 'field':'q', 'cellStyle':bkred});
+				if (ycyxtype == 0){
+					coldata.push({'title':'OrignalValue', 'field':'OrignalValue', 'cellStyle':bkred});
+					coldata.push({'title':'LastValidValue', 'field':'LastValidValue', 'cellStyle':bkred});
+				}
+				//remap data
+				for(var i =0; i < result.length; i++){
+					result[i]["index"] = i+1
+					if (ycyxtype == 0){
+						result[i]["Val"] = result[i]["Val"].toFixed(3);
+						result[i]["OrignalValue"] = result[i]["OrignalValue"].toFixed(3);
+						result[i]["LastValidValue"] = result[i]["LastValidValue"].toFixed(3);
+					}
+				}
+				$('#datatable').bootstrapTable({
+					striped: true,
+					columns: coldata,
+					cache: false,
+					pagination: true,
+					pageList: [10],
+					pageSize: 10,
+					data: result
+				});
+			}
+		});
+	}
+	var treeinit = 0;
+	function refreshtree(){
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url:"/api/getChannels",
+			data:JSON.stringify({
+			}),
+			success:function(result){
+				if (treeinit == 0){
+					$("#tree1").fancytree({
+		//          extensions: ["select"],
+						checkbox: false,
+						selectMode: 1,
+						source: result,
+						activate: function(event, data) {
+							if (data.node.parent.parent == null){
+								treeseltype = 0;
+								treeseldatakey = data.node.key;
+								treeseldata1 = data.node.data['index'];
+							}
+							else{
+								treeseltype = 1;
+								treeseldatakey = data.node.parent.key;
+								treeseldata1 = data.node.parent.data['index'];
+								treeseldata2 = data.node.data['index'];
+							}
+							refreshdata();
+						},
+						select: function(event, data) {
+							// Display list of selected nodes
+							//var s = data.tree.getSelectedNodes().join(", ");
+							//$("#echoSelection1").text(s);
+						},
+						dblclick: function(event, data) {
+							//data.node.toggleSelected();
+						},
+						keydown: function(event, data) {
+							//if( event.which === 32 ) {
+							//	data.node.toggleSelected();
+							//	return false;
+							//}
+						}
+					});
+					treeinit = 1;
+				}
+				else{
+					var tree = $('#tree1').fancytree('getTree');
+  					tree.reload(result);
+				}
+				$.notify({
+						message: '刷新Channel成功' 
+					},{
+						type: 'success',
+						placement: {
+							from: "bottom",
+							align: "right"
+						}
+				});
+			}
+    	});
+	}
+	refreshtree();
+</script>

@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+<head lang="zh-CN">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta content="" name="description" />
+	<meta content="" name="author" />
+	<link rel="icon" href="/resource/favicon.ico">
+	<title>RealData</title>
+	<link href="/resource/bootstrap-notify/animate.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" rel="stylesheet">
+	<link href="/resource/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet">
+	
+	<script src="/resource/jquery/jquery-1.11.3.min.js"></script>
+	<script src="/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	<script src="/resource/bootstrap-notify/bootstrap-notify.min.js"></script>
+	<script src="/resource/bootstrap-select/js/bootstrap-select.min.js"></script>
+</head>
+<body>
+	<table style="width: 100%;height: 100%;">
+		<tr >
+			<td style="width: 5%;"></td>
+			<td style="width: 89%;">
+				<input id="path" value="" type="text" placeholder="HZ3000 Path" class="form-control">
+			</td>
+			<td style="width: 1%;"></td>
+			<td>
+				<button type="submit" class="btn btn-success" onclick="loadpath()">Load File</button>
+			</td>
+			<td style="width: 5%;"></td>
+		</tr>
+	</table>
+	<table style="width: 100%;height: 100%; margin-top: 5px;">
+		<tr >
+			<td style="width: 5%;"></td>
+			<td>厂信息预览</td>
+			<td><select class="selectpicker" id="dtype">
+				<option value="0">遥测</option>
+				<option value="1">遥信</option>
+				<option value="2">遥控</option>
+				<option value="3">SOE</option>
+				</select>
+			</td>
+			<td><input id="pointinfo" value="" readonly='true' type="text" placeholder="Point Info" class="form-control"></td>
+			<td style="width: 5%;"></td>
+		</tr>
+		<tr>
+			<td style="width: 5%;"></td>
+			<td><select class="selectpicker" id="factory"></select></td>
+			<td><select class="selectpicker" id="group"></select></td>
+			<td><select class="selectpicker" id="point"></select></td>
+			<td style="width: 5%;"></td>
+		</tr>
+	</table>
+	<table style="width: 100%;height: 100%; margin-top: 10px;">
+		<tr >
+			<td style="width: 5%;"></td>
+			<td style="width: 40%;">
+				<input id="ip" value="127.0.0.1" type="text" placeholder="RDS IP" class="form-control">
+			</td>
+			<td style="width: 2%;"></td>
+			<td style="width: 15%;">
+				<input id="ykport" value="10001" type="text" placeholder="YK Port" class="form-control">
+			</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 15%;">
+				<input id="rdsport" value="10002" type="text" placeholder="RDS Port" class="form-control">
+			</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 15%;">
+				<input id="mcport" value="10003" type="text" placeholder="MC Port" class="form-control">
+			</td>
+			<td style="width: 1%;"></td>
+			<td>
+				<button type="submit" class="btn btn-success" onclick="addrds()">Add RDS</button>
+			</td>
+			<td style="width: 5%;"></td>
+		</tr>
+		<tr >
+			<table style="width: 100%;height: 100%">
+			<td style="width: 5%;"></td>
+			<td  style="width: 90%;"><table class="table table-striped">
+				<thead>
+					<th style="width: 35%;">RDS IP</th>
+					<th>YK Port</th>
+					<th>RDS Port</th>
+					<th>MC Port</th>
+					<th>Detele</th>
+				  </tr>
+				</thead>
+				<tbody id="rdslist">
+				</tbody>
+			  </table></td>
+			  <td style="width: 5%;"></td>
+			</table>
+		</tr>
+	</table>
+</body>
+</html>
+<script type="text/javascript">
+	function delrds(ip, ykport, rdsport, mcport){
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url:"/api/delRds",
+			data:JSON.stringify({
+				"ip":ip,
+				"ykport":ykport,
+				"rdsport":rdsport,
+				"mcport":mcport
+			}),
+			success:function(result){
+				if (result == 1){
+					$.notify({
+						message: '删除RDS成功' 
+					},{
+						type: 'success',
+						placement: {
+							from: "bottom",
+							align: "right"
+						}
+					});
+				}
+				else{
+					$.notify({
+						message: '删除RDS失败' 
+					},{
+						type: 'warning',
+						placement: {
+							from: "bottom",
+							align: "right"
+						}
+					});
+				}
+				refreshList()
+			}
+    	});
+	}
+
+	function addrds(){
+		var ip = document.getElementById("ip").value;
+		var ykport = document.getElementById("ykport").value;
+		var rdsport = document.getElementById("rdsport").value;
+		var mcport = document.getElementById("mcport").value;
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url:"/api/addRds",
+			data:JSON.stringify({
+				"ip":ip,
+				"ykport":ykport,
+				"rdsport":rdsport,
+				"mcport":mcport
+			}),
+			success:function(result){
+				if (result == 1){
+					$.notify({
+						message: '增加RDS成功' 
+					},{
+						type: 'success',
+						placement: {
+							from: "bottom",
+							align: "right"
+						}
+					});
+				}
+				else{
+					$.notify({
+						message: '增加RDS失败' 
+					},{
+						type: 'warning',
+						placement: {
+							from: "bottom",
+							align: "right"
+						}
+					});
+				}
+				refreshList()
+			}
+    	});
+	}
+
+	function refreshList(){
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url:"/api/getRdsList",
+			data:JSON.stringify({
+			}),
+			success:function(result){
+				var str = ""
+				for(var i =0; i < result.length; i++){
+					row = "<tr><td>"+result[i][0]+"</td><td>"+result[i][1]+"</td><td>"+result[i][2]+"</td><td>"+result[i][3]+"</td><td><button type='button' class='btn btn-xs btn-primary' onclick=\"delrds('"
+					row = row + result[i][0] + "','" + result[i][1] + "','" + result[i][2] + "','" + result[i][3] + "')\">Detele</button></td></tr>"
+					str = str + row
+				}
+				document.getElementById("rdslist").innerHTML=str;
+			}
+    	});
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url:"/api/getHZ3000Path",
+			data:JSON.stringify({
+			}),
+			success:function(result){
+				$('#path').val(result)
+			}
+    	});
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url:"/api/getFactorys",
+			data:JSON.stringify({
+			}),
+			success:function(result){
+				var strv = "";
+				for (var i = 0; i < result.length; i++){
+					strv += '<option value="' + result[i]['ID'] + '">' + result[i]['Name'] + "(" + result[i]['Parent'] + ')</option>';
+				}
+				if (result.length > 0){
+					refreshGroup(result[0]['ID']);
+				}
+				else{
+					refreshGroup('');
+				}
+				
+				$('#factory').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+					refreshGroup($('#factory').val());
+				});
+				document.getElementById("factory").innerHTML = strv;
+				$(".selectpicker").selectpicker('refresh');
+			}
+    	});
+	}
+
+	function refreshGroup(facid){
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url:"/api/getGroups",
+			data:JSON.stringify({
+				'factoryid':facid
+			}),
+			success:function(result){
+				var strv = "";
+				for (var i = 0; i < result.length; i++){
+					strv += '<option value="' + result[i]['ID'] + '">' + result[i]['Name'] + '</option>';
+				}
+				if (result.length > 0){
+					refreshPoint(facid, result[0]['ID'], $('#dtype').val());
+				}
+				else{
+					refreshPoint(facid, '', $('#dtype').val());
+				}
+				
+				$('#group').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+					refreshPoint($('#factory').val(), $('#group').val(), $('#dtype').val())
+				});
+				document.getElementById("group").innerHTML = strv;
+				$(".selectpicker").selectpicker('refresh');
+			}
+    	});
+	}
+
+	function refreshPoint(facid, groupid,type){
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url:"/api/getPoints",
+			data:JSON.stringify({
+				'factoryid':facid,
+				'groupid':groupid,
+				'type':type
+			}),
+			success:function(result){
+				var strv = "";
+				for (var i = 0; i < result.length; i++){
+					var valstr = 'Ch:' + result[i]['Channel'] + ' Md:' + result[i]['Module'] + ' Dt:' + result[i]['Dot'] + " RID:" + result[i]['ID']
+					strv += '<option value="' + valstr+ '">' + result[i]['Name'] + '</option>';
+				}
+				if (result.length > 0){
+					var i = 0;
+					var valstr = 'Ch:' + result[i]['Channel'] + ' Md:' + result[i]['Module'] + ' Dt:' + result[i]['Dot'] + " RID:" + result[i]['ID']
+					$('#pointinfo').val(valstr);
+				}
+				else{
+					$('#pointinfo').val("");
+				}
+				
+				$('#point').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+					$('#pointinfo').val($('#point').val());
+				});
+				document.getElementById("point").innerHTML = strv;
+				$(".selectpicker").selectpicker('refresh');
+			}
+    	});
+	}
+	$('#dtype').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+		refreshPoint($('#factory').val(), $('#group').val(), $('#dtype').val())
+	});
+
+	function loadpath(){
+		path = $('#path').val()
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url:"/api/setHZ3000Path",
+			data:JSON.stringify({
+				'path':path
+			}),
+			success:function(result){
+				refreshList();
+			}
+    	});
+	}
+	refreshList();
+</script>

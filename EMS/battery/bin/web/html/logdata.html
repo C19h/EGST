@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<head lang="zh-CN">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta content="" name="description" />
+	<meta content="" name="author" />
+	<link rel="icon" href="/resource/favicon.ico">
+	<title>RealData</title>
+	<link href="/resource/bootstrap-notify/animate.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/resource/bootstrap-table/bootstrap-table.min.css" />
+	<link rel="stylesheet" href="/resource/fancytree/skin-win7/ui.fancytree.min.css">
+	<link href="/resource/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css">
+	<script src="/resource/jquery/jquery-1.11.3.min.js"></script>
+	<script src="/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	<script src="/resource/bootstrap-notify/bootstrap-notify.min.js"></script>
+	<script src="/resource/jquery-ui/jquery-ui.min.js"></script>
+	<script src="/resource/fancytree/jquery.fancytree.js"></script>
+	<script type="text/javascript" src="/resource/bootstrap-table/bootstrap-table.min.js" ></script>
+	<script type="text/javascript" src="/resource/bootstrap-table/locale/bootstrap-table-zh-CN.min.js" ></script>
+	<style type="text/css">
+		.pull-right.pagination-detail{
+			display:none;
+			}
+	</style>
+</head>
+<body>
+	<table style="margin-top: 5px;">
+		<tr>
+			<td>
+				<input type="checkbox" id='cbInfo' class="form-check-input" value="" checked><font color="#000000">Info   </font>
+				<input type="checkbox" id='cbWarning' class="form-check-input" value="" checked><font color="#A0A000">Warning</font>
+				<input type="checkbox" id='cbError' class="form-check-input" value="" checked><font color="#A00000">Error  </font>
+				<input type="checkbox" id='cbDebug' class="form-check-input" value="" checked><font color="#A0A0A0">Debug  </font>
+				<button type="button" class="btn btn-success" onclick="refreshdata()">Refresh Log</button>
+			</td>
+		</tr>
+		<tr style="height: 5px;"></tr>
+		<tr style="height: 100%;">
+			<td style="vertical-align: top">
+				<div id='tableContainer'>
+					<table id="datatable"></table>
+				</div>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
+<script type="text/javascript">
+	function refreshdata(){
+		var cinfo = $('#cbInfo').is(':checked');
+		var cwarning = $('#cbWarning').is(':checked');
+		var cerror = $('#cbError').is(':checked');
+		var cdebug = $('#cbDebug').is(':checked');
+		var turl = "/api/getLogData";
+		$.ajax({
+			type:"post",
+			dataType:'json',
+            contentType: "application/json; charset=utf-8",
+			url: turl,
+			data:JSON.stringify({
+				'info':cinfo,
+				'warning':cwarning,
+				'error':cerror,
+				'debug':cdebug
+			}),
+			success:function(result){
+				$('#datatable').bootstrapTable('removeAll');
+				document.getElementById("tableContainer").innerHTML='<table id="datatable"></table>';
+				var coldata = [];
+				var bkred = function(value,row,index){  
+                        	    if (row["Level"] == "Error"){  
+                        	        return {css:{"background-color":"pink"}}; 
+								}
+								else if (row["Level"] == "Warning"){
+                        	        return {css:{"background-color":"lightyellow"}}; 
+								}
+								else if (row["Level"] == "Debug"){
+                        	        return {css:{"background-color":"lightgrey"}}; 
+								}
+								else{
+									return {};
+								}
+                        	};
+				coldata.push({'title':'Time', 'field':'Time', 'cellStyle':bkred});
+				coldata.push({'title':'Level', 'field':'Level', 'cellStyle':bkred});
+				coldata.push({'title':'Message', 'field':'Message', 'cellStyle':bkred});
+				
+				$('#datatable').bootstrapTable({
+					striped: false,
+					columns: coldata,
+					cache: false,
+					pagination: true,
+					pageList: [10],
+					pageSize: 10,
+					data: result
+				});
+			}
+		});
+	}
+	
+	refreshdata();
+</script>

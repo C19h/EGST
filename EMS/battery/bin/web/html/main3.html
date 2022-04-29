@@ -1,0 +1,282 @@
+
+<!DOCTYPE html>
+<head lang="zh-CN">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta content="" name="description" />
+	<meta content="" name="author" />
+	<link rel="icon" href="/resource/favicon.ico">
+	<title>RealData</title>
+	<link href="/resource/bootstrap-notify/animate.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/resource/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" rel="stylesheet">
+	<link href="/resource/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet">
+	
+	<script src="/resource/jquery/jquery-1.11.3.min.js"></script>
+	<script src="/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	<script src="/resource/bootstrap-notify/bootstrap-notify.min.js"></script>
+	<script src="/resource/bootstrap-select/js/bootstrap-select.min.js"></script>
+	<script src="/resource/echarts/echarts.min.js"></script>
+</head>
+<body>
+	<table style="width: 100%;height: 100%;">
+		<tr >
+			<td style="width: 5%;"></td>
+			<td style="width: 10%;">
+				选择日期
+			</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 84%;">
+				<select class="selectpicker" id="datestr"></select>
+			</td>
+		</tr>
+		<tr style="height: 5px;"></tr>
+		<tr >
+			<td style="width: 5%;"></td>
+			<td style="width: 10%;">
+				买电电价
+			</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 84%;">
+				<input id="BPh" value="[0.57,0.77,0.77,0.77,0.57,0.57,0.57,0.57,0.77,0.77,0.77,0.77,1.03,1.03,1.03,0.57,0.26,0.26,0.26,0.26,0.26,0.26,0.26,0.26]"  type="text" placeholder="买电电价" class="form-control">
+			</td>
+		</tr>
+		<tr style="height: 5px;"></tr>
+		<tr >
+			<td style="width: 5%;"></td>
+			<td style="width: 10%;">
+				卖电电价
+			</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 84%;">
+				<input id="SPh" value="[0.27,0.32,0.32,0.32,0.27,0.27,0.27,0.27,0.32,0.32,0.32,0.32,0.32,0.32,0.32,0.27,0.19,0.19,0.19,0.19,0.19,0.19,0.19,0.19]"  type="text" placeholder="卖电电价" class="form-control">
+			</td>
+		</tr>
+		<tr style="height: 5px;"></tr>
+		<tr >
+			<td style="width: 5%;"></td>
+			<td style="width: 10%;">
+				买电上限
+			</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 84%;">
+				<input id="BLimit" value="[800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800]"  type="text" placeholder="买电上限" class="form-control">
+			</td>
+		</tr>
+		<tr style="height: 5px;"></tr>
+		<tr >
+			<td style="width: 5%;"></td>
+			<td style="width: 10%;">
+				卖电上限
+			</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 84%;">
+				<input id="SLimit" value="[800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800]"  type="text" placeholder="卖电上限" class="form-control">
+			</td>
+		</tr>
+	</table>
+	<table style="width: 100%;height: 100%;">
+		<tr style="height: 5px;"></tr>
+		<tr>
+			<td style="width: 5%;"></td>
+			<td style="width: 15%;" style="margin-right: 0px;">电池成本(单位功率)</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 10%;">
+				<input id="BCost" value="0.1"  type="text" placeholder="电池成本" class="form-control">
+			</td>
+			<td style="width: 5%;"></td>
+			<td style="width: 15%;" style="margin-right: 0px;">Soc上限</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 10%;">
+				<input id="SOCMax" value="200"  type="text" placeholder="Soc上限" class="form-control">
+			</td>
+			<td style="width: 5%;"></td>
+			<td style="width: 15%;" style="margin-right: 0px;">Soc下限</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 10%;">
+				<input id="SOCMin" value="20"  type="text" placeholder="Soc下限" class="form-control">
+			</td>
+		</tr>
+		<tr style="height: 5px;"></tr>
+		<tr>
+			<td style="width: 5%;"></td>
+			<td style="width: 15%;" style="margin-right: 0px;">充电最大功率</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 10%;">
+				<input id="BCMax" value="60"  type="text" placeholder="充电最大功率" class="form-control">
+			</td>
+			<td style="width: 5%;"></td>
+			<td style="width: 15%;" style="margin-right: 0px;">放电最大功率</td>
+			<td style="width: 1%;"></td>
+			<td style="width: 10%;">
+				<input id="BUMax" value="80"  type="text" placeholder="放电最大功率" class="form-control">
+			</td>
+			<td style="width: 5%;"></td>
+			<td style="width: 15%;" style="margin-right: 0px;"></td>
+			<td style="width: 1%;"></td>
+			<td>
+				<button type="submit" class="btn btn-success" onclick="refreshchart()">计算</button>
+			</td>
+		</tr>
+	</table>
+	<div id="main" style="height:500px;"></div>
+	<div id="space" style="height:20px;"></div>
+	<div id="main2" style="height:500px;"></div>
+</body>
+</html>
+<script type="text/javascript">
+	function refreshchart(){
+		var UPh = $('#UPh').val();
+		var LPh = $('#LPh').val();
+		var SPh = $('#SPh').val();
+		var BPh = $('#BPh').val();
+		var SLimit = $('#SLimit').val();
+		var BLimit = $('#BLimit').val();
+		var BCost = $('#BCost').val();
+		var SOCMax = $('#SOCMax').val();
+		var SOCMin = $('#SOCMin').val();
+		var BUMax = $('#BUMax').val();
+		var BCMax = $('#BCMax').val();
+		var datestr = $('#datestr').val();
+		$.ajax({
+			type:"POST",
+			url:"/getChart3",
+			contentType: "application/json",
+			dataType:"json",
+			data:JSON.stringify({
+				'BCost':BCost,
+				'UPh': UPh,
+				'LPh':LPh,
+				'SPh':SPh,
+				'BPh':BPh,
+				'SLimit':SLimit,
+				'BLimit':BLimit,
+				'SOCMax':SOCMax,
+				'SOCMin':SOCMin,
+				'BUMax':BUMax,
+				'BCMax':BCMax,
+				'datestr':datestr,
+			}),
+			success:function(result){
+				x = [];
+				for(var i=0;i<result['Need'].length;i++){
+					//result[i] = (result[i]).toFixed(3);
+					t = i + 7
+					if (t >= 24)
+					{
+						t = t - 24
+					}
+					x.push(t);
+				}
+				// 利用dom，初始化echarts实例
+				var myChart = echarts.init(document.getElementById('main'));
+				var option = {
+					title: {
+						text: '总成本' + result['TotalCost']
+					},
+					tooltip: {},
+					legend: {
+						data:['买电电价','用电量','光伏功率(负)','用电量缺口','电池功率','电池剩余','成本','买电量(负为卖)'],
+						selected:{
+							'用电量':false,
+							'光伏功率(负)':false,
+							'电池剩余':false,
+							'成本':false,
+							'买电量(负为卖)':false,
+						}
+					},
+					dataZoom:[{
+						type:"inside"         //详细配置可见echarts官网
+					}],
+					toolbox:{
+						show:true,
+						feature:{
+							restore: { //重置
+								show: true
+							},
+							dataView : {                            //数据视图工具，可以展现当前图表所用的数据，编辑后可以动态更新
+								show: true,                         //是否显示该工具。
+								title:"数据视图",
+								readOnly: false,                    //是否不可编辑（只读）
+								lang: ['数据视图', '关闭', '刷新'],  //数据视图上有三个话术，默认是['数据视图', '关闭', '刷新']
+							}
+						}
+					},
+					xAxis: {
+						data: x
+					},
+					yAxis: [
+						{
+							name: '功率',
+							type: 'value'
+						}, {
+							name: '电价',
+							type: 'value'
+						}
+					],
+					series: [{
+						name: '买电电价',
+						type: 'line',
+						yAxisIndex: 1,
+						data: result['Price']
+						},{
+						name: '用电量缺口',
+						type: 'line',
+						data: result['Need']
+						},
+						{
+						name: '电池功率',
+						type: 'line',
+						data: result['U']
+						},
+						{
+						name: '电池剩余',
+						type: 'line',
+						data: result['SOC']
+						},
+						{
+						name: '成本',
+						type: 'line',
+						data: result['Cost']
+						},
+						{
+						name: '光伏功率(负)',
+						type: 'line',
+						data: result['L']
+						},
+						{
+						name: '买电量(负为卖)',
+						type: 'line',
+						data: result['Sell']
+						},
+						{
+						name: '用电量',
+						type: 'line',
+						data: result['Uph']
+						}
+					]
+				};
+				// 使用刚指定的配置项和数据显示图表。
+				myChart.setOption(option);
+		}});
+	}
+	function refreshselect(){
+		$.ajax({
+			type:"POST",
+			url:"/getDays",
+			contentType: "application/json",
+			dataType:"json",
+			data:{},
+			success:function(result){
+				var strv = "";
+				for (var i = 0; i < result.length; i++){
+					strv += '<option value="' + result[i] + '">' + result[i] + '</option>';
+				}
+				document.getElementById("datestr").innerHTML = strv;
+				$(".selectpicker").selectpicker('refresh');
+			}
+		});
+	}
+	refreshselect()
+</script>
